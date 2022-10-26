@@ -28,7 +28,7 @@ But, soon after I switched to uploading to "**AWS S3 Glacier Deep Archive**".
 The scripts and documentation here are for setting up and uploading encrypted archives to both AWS solutions
 
 ## Assumptions and Functionality
-The scripts in this repo are performing the following tasks, which are explained in this documentation:
+[The scripts in this repo](https://github.com/mshaher/encrypted_aws_glacier_backups) are performing the following tasks, which are explained in this documentation:
 - Files, folders or the contents of folders are made into archives first before encryption
 - Archive files are encrypted with GPG using symmetric encryption. With symmetric encryption, a passphrase instead of certificates is used. This way, the user only has to worry about remembering or securely saving the passphrase, instead of the storage and management of the gpg private certificate
 - Encrypted archives of less than 5GB in size each can then be uploaded to AWS Glacier (4GB with AWS Glacier API-Only). Support for uploading larger size files will be explained later in the documentation
