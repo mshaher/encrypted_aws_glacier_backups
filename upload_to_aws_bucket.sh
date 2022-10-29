@@ -181,14 +181,14 @@ ls *.tar.gpg | sort -R | while read -r FILENAME; do
 			else
 				OUTPUT_FILENAME="${FILENAME}"
 			fi
-			date
+			# date
 			aws s3 cp "${FILENAME}" s3://${BUCKET}/${PREFIX}${OUTPUT_FILENAME} --cli-connect-timeout 6000 --storage-class DEEP_ARCHIVE 2>&1
-			date
+			# date
 			if [ ${USE_LOCAL_METADATA} = true ]; then
 				echo "${OBJECT}::::::${DATE}:${BUCKET}:${PREFIX}:${HASH_DESC}:${SHA256SUM}:${SHA512SUM}:" >> ${METADATA_FILE}
 			fi
 		else
-			echo "${FILENAME} is more than 4GB in size. It will not be uploaded to AWS at this time"
+			echo "${FILENAME} is more than 5GB in size. It will not be uploaded to AWS at this time"
 		fi
 	fi
 	#-------------------------------------------------------------------------------------------------------
