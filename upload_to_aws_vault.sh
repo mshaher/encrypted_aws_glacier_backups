@@ -50,8 +50,8 @@ PERSONAL_CONFIG_FILE="${HOME}/.aws/enc_backups.config"
 ##############################################################################################
 ## Begin: Read the above varaiables from the PERSONAL_CONFIG_FILE if it exists
 #---------------------------------------------------------------------------------------------
-if [ -r ${PERSONAL_CONFIG_FILE} ]; then
-	. ${PERSONAL_CONFIG_FILE}
+if [ -r "${PERSONAL_CONFIG_FILE}" ]; then
+	. "${PERSONAL_CONFIG_FILE}"
 fi
 #---------------------------------------------------------------------------------------------
 ## End: Read the above varaiables from the PERSONAL_CONFIG_FILE if it exists
@@ -85,7 +85,7 @@ fi
 ##############################################################################################
 ## Begin: Attempt to create METADATA_DIR or check that it is writeable
 #---------------------------------------------------------------------------------------------
-mkdir -p ${METADATA_DIR} 2>/tmp/foobar123 && touch ${METADATA_DIR}/foobar123 2>/tmp/foobar123 && rm -f ${METADATA_DIR}/foobar123
+mkdir -p "${METADATA_DIR}" 2>/tmp/foobar123 && touch "${METADATA_DIR}/foobar123" 2>/tmp/foobar123 && rm -f "${METADATA_DIR}/foobar123"
 if [ -s /tmp/foobar123 ]; then
 	cat /tmp/foobar123 | sed "s|.*|Metadata directory $METADATA_DIR is not writable|" && rm -f /tmp/foobar123; exit 1
 else
@@ -98,7 +98,7 @@ fi
 ##############################################################################################
 ## Begin: Checking that METADATA_FILE exists and is writable
 #---------------------------------------------------------------------------------------------
-if [ ! -f ${METADATA_FILE} ]; then
+if [ ! -f "${METADATA_FILE}" ]; then
 	echo ""
 	echo "Metadata file ${METADATA_FILE} doesn't exist."
 	echo "You can either, "
@@ -109,7 +109,7 @@ if [ ! -f ${METADATA_FILE} ]; then
 	read ANSWER
 	CREATE=`echo ${ANSWER} | tr [A-Z] [a-z]`
 	if [ "${CREATE}" = "y" ]; then
-		touch ${METADATA_FILE}
+		touch "${METADATA_FILE}"
 	elif [ "${CREATE}" = "n" ]; then
 		echo "Please edit ${0} and change the value of the variable METADATA_FILE to your desired file"
 		exit 1
@@ -120,7 +120,7 @@ if [ ! -f ${METADATA_FILE} ]; then
 	fi
 fi
 
-if [ ! -w ${METADATA_FILE} ]; then
+if [ ! -w "${METADATA_FILE}" ]; then
 	echo "Metadata file ${METADATA_FILE} isn't writable."
 	echo "Please change the permissions on the file and try again."
 	exit 1
@@ -134,12 +134,12 @@ cd "$ENC_BACKUP_DIR"
 ls *.tar.gpg | sort -R | while read -r FILENAME; do
 
 	echo -n "Checking ${FILENAME} ..."
-	SHA512SUM=`sha512sum ${FILENAME} | awk '{print $1}'`
+	SHA512SUM=`sha512sum "${FILENAME}" | awk '{print $1}'`
 	JSON_FILE="${METADATA_DIR}/${FILENAME}.json"
-	GPGFILENAME=`basename ${FILENAME}`
-	OBJECT=`echo ${GPGFILENAME%%\.tar.*}`
-	SHA256SUM=`echo -n ${OBJECT} | sha256sum | awk '{print $1}'`
-	ARCHIVE_SIZE=$(wc -c ${FILENAME} | awk '{print $1}')
+	GPGFILENAME=`basename "${FILENAME}"`
+	OBJECT=`echo "${GPGFILENAME%%\.tar\.gpg}"`
+	SHA256SUM=`echo -n "${OBJECT}" | sha256sum | awk '{print $1}'`
+	ARCHIVE_SIZE=$(wc -c "${FILENAME}" | awk '{print $1}')
 
 	########################################################################################################
 	## Begin: When a match is found in the metadata file 
@@ -194,7 +194,7 @@ ls *.tar.gpg | sort -R | while read -r FILENAME; do
 			AWSCHECKSUM=`grep '"checksum":' ${JSON_FILE} | awk -F: '{print $2}' | awk -F\" '{print $2}'`
 			AWSARCHIVEID=`grep '"archiveId":' ${JSON_FILE} | awk -F: '{print $2}' | awk -F\" '{print $2}'`
 
-			echo "${OBJECT}::::::${DATE}:${VAULT}:${HASH_DESC}:${SHA256SUM}:${SHA512SUM}:${AWSLOCATION}:${AWSCHECKSUM}:${AWSARCHIVEID}" >> ${METADATA_FILE}
+			echo "${OBJECT}::::::${DATE}:${VAULT}:${HASH_DESC}:${SHA256SUM}:${SHA512SUM}:${AWSLOCATION}:${AWSCHECKSUM}:${AWSARCHIVEID}" >> "${METADATA_FILE}"
 		else
 			echo "${FILENAME} is more than 4GB in size. It will not be uploaded to AWS at this time"
 		fi

@@ -64,8 +64,8 @@ PERSONAL_CONFIG_FILE="${HOME}/.aws/enc_backups.config"
 ##############################################################################################
 ## Begin: Read the above varaiables from the PERSONAL_CONFIG_FILE if it exists
 #---------------------------------------------------------------------------------------------
-if [ -r ${PERSONAL_CONFIG_FILE} ]; then
-	. ${PERSONAL_CONFIG_FILE}
+if [ -r "${PERSONAL_CONFIG_FILE}" ]; then
+	. "${PERSONAL_CONFIG_FILE}"
 fi
 #---------------------------------------------------------------------------------------------
 ## End: Read the above varaiables from the PERSONAL_CONFIG_FILE if it exists
@@ -99,7 +99,7 @@ if [ ${USE_LOCAL_METADATA} = true ]; then
 	##############################################################################################
 	## Begin: Attempt to create METADATA_DIR or check that it is writeable
 	#---------------------------------------------------------------------------------------------
-	mkdir -p ${METADATA_DIR} 2>/tmp/foobar123 && touch ${METADATA_DIR}/foobar123 2>/tmp/foobar123 && rm -f ${METADATA_DIR}/foobar123
+	mkdir -p "${METADATA_DIR}" 2>/tmp/foobar123 && touch "${METADATA_DIR}/foobar123" 2>/tmp/foobar123 && rm -f "${METADATA_DIR}/foobar123"
 	if [ -s /tmp/foobar123 ]; then
 		cat /tmp/foobar123 | sed "s|.*|Metadata directory $METADATA_DIR is not writable|" && rm -f /tmp/foobar123; exit 1
 	else
@@ -112,7 +112,7 @@ if [ ${USE_LOCAL_METADATA} = true ]; then
 	##############################################################################################
 	## Begin: Checking that METADATA_FILE exists and is writable
 	#---------------------------------------------------------------------------------------------
-	if [ ! -f ${METADATA_FILE} ]; then
+	if [ ! -f "${METADATA_FILE}" ]; then
 		echo ""
 		echo "Metadata file ${METADATA_FILE} doesn't exist."
 		echo "You can either, "
@@ -134,7 +134,7 @@ if [ ${USE_LOCAL_METADATA} = true ]; then
 		fi
 	fi
 	
-	if [ ! -w ${METADATA_FILE} ]; then
+	if [ ! -w "${METADATA_FILE}" ]; then
 		echo "Metadata file ${METADATA_FILE} isn't writable."
 		echo "Please change the permissions on the file and try again."
 		exit 1
@@ -146,20 +146,20 @@ fi
 
 cd "$ENC_BACKUP_DIR"
 
-ls *.tar.gpg | sort -R | while read -r FILENAME; do
+find ./ -name "*.tar.gpg" | grep -iv '^\./uploaded' | sed "s/^\.\///" | while read -r FILENAME; do
 
 	echo -n "Checking ${FILENAME} ..."
-	GPGFILENAME=`basename ${FILENAME}`
-	OBJECT=`echo ${GPGFILENAME%%\.tar.*}`
-	SHA256SUM=`echo -n ${OBJECT} | sha256sum | awk '{print $1}'`
-	ARCHIVE_SIZE=$(wc -c ${FILENAME} | awk '{print $1}')
+	GPGFILENAME=`basename "${FILENAME}"`
+	OBJECT=`echo "${GPGFILENAME%%\.tar\.gpg}"`
+	SHA256SUM=`echo -n "${OBJECT}" | sha256sum | awk '{print $1}'`
+	ARCHIVE_SIZE=$(wc -c "${FILENAME}" | awk '{print $1}')
 	NEWFILE=true
 
 	########################################################################################################
 	## Begin: When a match is found in the metadata file 
 	#-------------------------------------------------------------------------------------------------------
 	if [ ${USE_LOCAL_METADATA} = true ]; then
-		SHA512SUM=`sha512sum ${FILENAME} | awk '{print $1}'`
+		SHA512SUM=`sha512sum "${FILENAME}" | awk '{print $1}'`
 		if grep -q ":${SHA512SUM}:" ${METADATA_FILE}; then # check for the sha512sum of the gpg file to be backed up
 			# already successfully uploaded
 			echo "${FILENAME} was already uploaded to glacier."
@@ -182,10 +182,10 @@ ls *.tar.gpg | sort -R | while read -r FILENAME; do
 				OUTPUT_FILENAME="${FILENAME}"
 			fi
 			# date
-			aws s3 cp "${FILENAME}" s3://${BUCKET}/${PREFIX}${OUTPUT_FILENAME} --cli-connect-timeout 6000 --storage-class DEEP_ARCHIVE 2>&1
+			aws s3 cp "${FILENAME}" "s3://${BUCKET}/${PREFIX}${OUTPUT_FILENAME}" --cli-connect-timeout 6000 --storage-class DEEP_ARCHIVE 2>&1
 			# date
 			if [ ${USE_LOCAL_METADATA} = true ]; then
-				echo "${OBJECT}::::::${DATE}:${BUCKET}:${PREFIX}:${HASH_DESC}:${SHA256SUM}:${SHA512SUM}:" >> ${METADATA_FILE}
+				echo "${OBJECT}::::::${DATE}:${BUCKET}:${PREFIX}:${HASH_DESC}:${SHA256SUM}:${SHA512SUM}:" >> "${METADATA_FILE}"
 			fi
 		else
 			echo "${FILENAME} is more than 5GB in size. It will not be uploaded to AWS at this time"

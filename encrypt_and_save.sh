@@ -193,14 +193,14 @@ if  [ "$#" -eq "0" ] || [ "${OPTIND}" -eq "1" ]; then
 	exit 1
 else
 
-	if [ -r ${PERSONAL_CONFIG_FILE} ]; then
-		. ${PERSONAL_CONFIG_FILE}
+	if [ -r "${PERSONAL_CONFIG_FILE}" ]; then
+		. "${PERSONAL_CONFIG_FILE}"
 	fi
 
 	##############################################################################################
 	## Begin: Attempt to create ENC_BACKUP_DIR or check that it is writeable
 	#---------------------------------------------------------------------------------------------
-	mkdir -p ${ENC_BACKUP_DIR} 2>/tmp/foobar123 && touch ${ENC_BACKUP_DIR}/foobar123 2>/tmp/foobar123 && rm -f ${ENC_BACKUP_DIR}/foobar123
+	mkdir -p "${ENC_BACKUP_DIR}" 2>/tmp/foobar123 && touch "${ENC_BACKUP_DIR}/foobar123" 2>/tmp/foobar123 && rm -f "${ENC_BACKUP_DIR}/foobar123"
 	if [ -s /tmp/foobar123 ]; then
 		cat /tmp/foobar123 | sed "s|.*|Backup directory $ENC_BACKUP_DIR is not writable|" && rm -f /tmp/foobar123; exit 1
 	else
@@ -228,13 +228,14 @@ else
 
 	# ensure that TMPDIR folder exists and remove previous files
 	mkdir -p "${TMPDIR}"
-	cd ${TMPDIR} >/dev/null
+	cd "${TMPDIR}" >/dev/null
 
-	for ARCHIVE in ${ALL_ARCHIVES[@]}; do
-		BASENAME=`basename ${ARCHIVE}`
+	for ((i = 0; i < ${#ALL_ARCHIVES[@]}; i++)); do
+		ARCHIVE="${ALL_ARCHIVES[${i}]}"
+		BASENAME=`basename "${ARCHIVE}"`
 		# make sure a symlink in TMPDIR doesn't exist already. This could happen if the user interrupts the process at some point
 		# which can cause an infinite loop
-		rm -f ${TMPDIR}/${BASENAME}
+		rm -f "${TMPDIR}/${BASENAME}"
 	
 		if [ ! -e "${ENC_BACKUP_DIR}/${BASENAME}.tar.gpg" ] || [ ${OVERWRITE} = true ]; then
 			PROCEED="y"
@@ -258,13 +259,13 @@ else
 
 			if command -v gtar &> /dev/null; then
 				# use 'gtar' if available, otherwise just 'tar'
-				gtar cvh "${BASENAME}" | gpg --s2k-mode=3 --s2k-cipher-algo=AES256 --s2k-digest-algo=SHA512 --s2k-count=65011712 --symmetric --cipher-algo=AES256 --digest-algo=SHA512 --compress-algo=zlib --batch --passphrase-fd 3 3<<< "$MYPP" > ${ENC_BACKUP_DIR}/${BASENAME}.tar.gpg
+				gtar cvh "${BASENAME}" | gpg --s2k-mode=3 --s2k-cipher-algo=AES256 --s2k-digest-algo=SHA512 --s2k-count=65011712 --symmetric --cipher-algo=AES256 --digest-algo=SHA512 --compress-algo=zlib --batch --passphrase-fd 3 3<<< "$MYPP" > "${ENC_BACKUP_DIR}/${BASENAME}.tar.gpg"
 			else
-				tar cvh "${BASENAME}" | gpg --s2k-mode=3 --s2k-cipher-algo=AES256 --s2k-digest-algo=SHA512 --s2k-count=65011712 --symmetric --cipher-algo=AES256 --digest-algo=SHA512 --compress-algo=zlib --batch --passphrase-fd 3 3<<< "$MYPP" > ${ENC_BACKUP_DIR}/"${BASENAME}".tar.gpg
+				tar cvh "${BASENAME}" | gpg --s2k-mode=3 --s2k-cipher-algo=AES256 --s2k-digest-algo=SHA512 --s2k-count=65011712 --symmetric --cipher-algo=AES256 --digest-algo=SHA512 --compress-algo=zlib --batch --passphrase-fd 3 3<<< "$MYPP" > "${ENC_BACKUP_DIR}/${BASENAME}.tar.gpg"
 			fi
 
 			echo -n "Encryption of ${ARCHIVE} done! Removing symlink ${TMPDIR}/${BASENAME} ..."
-			rm -f ${TMPDIR}/${BASENAME}
+			rm -f "${TMPDIR}/${BASENAME}"
 			echo " Done"
 			echo ""
 		fi
