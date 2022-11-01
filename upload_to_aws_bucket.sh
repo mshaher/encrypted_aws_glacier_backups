@@ -185,8 +185,8 @@ find ./ -name "*.tar.gpg" | grep -iv '^\./uploaded' | sed "s/^\.\///" | while re
 			aws s3 cp "${FILENAME}" "s3://${BUCKET}/${PREFIX}${OUTPUT_FILENAME}" --cli-connect-timeout 6000 --storage-class DEEP_ARCHIVE 2>&1
 			# date
 			if [ ${USE_LOCAL_METADATA} = true ]; then
-				OBJ=`echo "${FILENAME%%\.tar\.gpg}"`
-				echo "${OBJ}::::::${DATE}:${BUCKET}:${PREFIX}:${HASH_DESC}:${SHA256SUM}:${SHA512SUM}:" >> "${METADATA_FILE}"
+				FILEDIR=`dirname "${FILENAME}" | sed "s/^\.//"`
+				echo "${OBJECT}::::::${DATE}:${BUCKET}:${PREFIX}${FILEDIR}:${HASH_DESC}:${SHA256SUM}:${SHA512SUM}:" >> "${METADATA_FILE}"
 			fi
 		else
 			echo "${FILENAME} is more than 5GB in size. It will not be uploaded to AWS at this time"
