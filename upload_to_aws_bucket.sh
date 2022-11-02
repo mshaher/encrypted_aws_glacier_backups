@@ -186,6 +186,9 @@ find ./ -name "*.tar.gpg" | grep -iv '^\./uploaded' | sed "s/^\.\///" | while re
 			# date
 			if [ ${USE_LOCAL_METADATA} = true ]; then
 				FILEDIR=`dirname "${FILENAME}" | sed "s/^\.//"`
+				if [ "${FILEDIR}" != "" ]; then
+					FILEDIR="${FILEDIR}/"
+				fi
 				echo "${OBJECT}::::::${DATE}:${BUCKET}:${PREFIX}${FILEDIR}:${HASH_DESC}:${SHA256SUM}:${SHA512SUM}:" >> "${METADATA_FILE}"
 			fi
 		else
