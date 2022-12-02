@@ -50,9 +50,10 @@ nav_order: 1
 	- Click on "**Start with an overview**" in the SNS page
 	- Click the number under "**Topics**" to list the existing topics. Then click the "**Create topic**" button
 	- Select "**Standard**" as the topic type. Give it a descriptive name, e.g: GlacierTopic. The rest can be left with the default values
+	- Click the **Create topic**" button
 	- In the resulting screen, create a subscription by clicking the "**Create subscription**"
 		- Choose "**Email**" for the Protocol, with the email address in the "**Endpoint**" input area
-		- Leave the rest as defaults, and then select the "**create subscription**" button
+		- Leave the rest as defaults, and then select the "**Create subscription**" button
 		- A message is sent to the email address with a confirmation link, so confirm the subscription once the email is received
 		- Note down the topic ARN since it will be used later. This usually starts with "**arn:aws:sns:**......"
 
